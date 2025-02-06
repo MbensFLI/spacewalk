@@ -1,6 +1,20 @@
+import json
+import csv
+import datetime as dt
 import matplotlib.pyplot as plt
 import pandas as pd
+import sys
 
+def main(input_file, output_file, graph_file):
+    print("--START--")
+
+    eva_data = read_json_to_dataframe(input_file)
+
+    write_dataframe_to_csv(eva_data, output_file)
+
+    plot_cumulative_time_in_space(eva_data, graph_file)
+
+    print("--END--")
 
 def read_json_to_dataframe(input_file):
     """
@@ -11,7 +25,7 @@ def read_json_to_dataframe(input_file):
         input_file_ (str): The path to the JSON file.
 
     Returns:
-         eva_df (pd.DataFrame): The cleaned and sorted data as a dataframe structure
+        eva_df (pd.DataFrame): The cleaned and sorted data as a dataframe structure
     """
     print(f'Reading JSON file {input_file}')
     eva_df = pd.read_json(input_file, convert_dates=['date'])
@@ -34,7 +48,6 @@ def write_dataframe_to_csv(df, output_file):
     """
     print(f'Saving to CSV file {output_file}')
     df.to_csv(output_file, index=False)
-
 
 def text_to_duration(duration):
     """
@@ -95,18 +108,16 @@ def plot_cumulative_time_in_space(df, graph_file):
     plt.show()
 
 
-# Main code
+if __name__ == "__main__":
 
-print("--START--")
+    if len(sys.argv) < 3:
+        input_file = './eva-data.json'
+        output_file = './eva-data.csv'
+        print(f'Using default input and output filenames')
+    else:
+        input_file = sys.argv[1]
+        output_file = sys.argv[2]
+        print('Using custom input and output filenames')
 
-input_file = open('./eva-data.json', 'r')
-output_file = open('./eva-data.csv', 'w')
-graph_file = './cumulative_eva_graph.png'
-
-eva_data = read_json_to_dataframe(input_file)
-
-write_dataframe_to_csv(eva_data, output_file)
-
-plot_cumulative_time_in_space(eva_data, graph_file)
-
-print("--END--")
+    graph_file = './cumulative_eva_graph.png'
+    main(input_file, output_file, graph_file)
